@@ -7051,7 +7051,7 @@ __metadata:
     "@types/ws": ^8.5.4
     chalk: 4.1.2
     fs-extra: 10.0.0
-    knex: 2.4.0
+    knex: 2.4.2
     koa: 2.13.4
     lodash: 4.17.21
     rimraf: 3.0.2
@@ -7073,7 +7073,7 @@ __metadata:
     date-fns: 2.29.3
     debug: 4.3.4
     fs-extra: 10.0.0
-    knex: 2.4.0
+    knex: 2.4.2
     lodash: 4.17.21
     semver: 7.3.8
     umzug: 3.1.1
@@ -20926,9 +20926,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:2.4.0":
-  version: 2.4.0
-  resolution: "knex@npm:2.4.0"
+"knex@npm:2.4.2":
+  version: 2.4.2
+  resolution: "knex@npm:2.4.2"
   dependencies:
     colorette: 2.0.19
     commander: ^9.1.0
@@ -20961,7 +20961,7 @@ __metadata:
       optional: true
   bin:
     knex: bin/cli.js
-  checksum: 66b4ae8412c61125b78512a66d924af95116628e16026efce4d03b80b2ced6b63208b37bb49fb52a499761da5e8981e136b48fcefcd48c3fe9fc72d9d17c5661
+  checksum: cfb6436c0e3df3cd1f55d3637e4f222d1acbc7b6ec3757e52c92cbf0a7da4055d40156d707ffede57dc155af75d7f5739a49d1b31d8755bc77bc0e4e2a570748
   languageName: node
   linkType: hard
 
