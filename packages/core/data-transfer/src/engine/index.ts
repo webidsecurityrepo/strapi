@@ -202,7 +202,7 @@ class TransferEngine<
     }
   ) {
     if (!this.progress.data[stage]) {
-      this.progress.data[stage] = { count: 0, bytes: 0 };
+      this.progress.data[stage] = { count: 0, bytes: 0, startTime: Date.now() };
     }
 
     const stageProgress = this.progress.data[stage];
@@ -346,7 +346,7 @@ class TransferEngine<
     keys.forEach((key) => {
       const sourceSchema = sourceSchemas[key];
       const destinationSchema = destinationSchemas[key];
-      const schemaDiffs = compareSchemas(destinationSchema, sourceSchema, strategy);
+      const schemaDiffs = compareSchemas(sourceSchema, destinationSchema, strategy);
 
       if (schemaDiffs.length) {
         diffs[key] = schemaDiffs;
@@ -364,15 +364,19 @@ class TransferEngine<
               const path = diff.path.join('.');
 
               if (diff.kind === 'added') {
-                return `Added "${path}": "${diff.value}" (${diff.type})`;
+                return `${path} exists in destination schema but not in source schema`;
               }
 
               if (diff.kind === 'deleted') {
-                return `Removed "${path}"`;
+                return `${path} exists in source schema but not in destination schema`;
               }
 
               if (diff.kind === 'modified') {
-                return `Modified "${path}": "${diff.values[0]}" (${diff.types[0]}) => "${diff.values[1]}" (${diff.types[1]})`;
+                if (diff.types[0] === diff.types[1]) {
+                  return `Schema value changed at "${path}": "${diff.values[0]}" (${diff.types[0]}) => "${diff.values[1]}" (${diff.types[1]})`;
+                }
+
+                return `Schema has differing data types at "${path}": "${diff.values[0]}" (${diff.types[0]}) => "${diff.values[1]}" (${diff.types[1]})`;
               }
 
               throw new TransferEngineValidationError(`Invalid diff found for "${uid}"`, {
@@ -433,6 +437,14 @@ class TransferEngine<
   }) {
     const { stage, source, destination, transform, tracker } = options;
 
+    const updateEndTime = () => {
+      const stageData = this.progress.data[stage];
+
+      if (stageData) {
+        stageData.endTime = Date.now();
+      }
+    };
+
     if (!source || !destination || this.shouldSkipStage(stage)) {
       // Wait until source and destination are closed
       const results = await Promise.allSettled(
@@ -476,11 +488,15 @@ class TransferEngine<
       stream
         .pipe(destination)
         .on('error', (e) => {
+          updateEndTime();
           this.#reportError(e, 'error');
           destination.destroy(e);
           reject(e);
         })
-        .on('close', resolve);
+        .on('close', () => {
+          updateEndTime();
+          resolve();
+        });
     });
 
     this.#emitStageUpdate('finish', stage);
@@ -687,7 +703,7 @@ class TransferEngine<
     const transform = this.#createStageTransformStream(stage);
     const tracker = this.#progressTracker(stage, {
       size: (value: IAsset) => value.stats.size,
-      key: (value: IAsset) => extname(value.filename) ?? 'NA',
+      key: (value: IAsset) => extname(value.filename) || 'No extension',
     });
 
     await this.#transferStage({ stage, source, destination, transform, tracker });
@@ -713,3 +729,5 @@ export const createTransferEngine = <S extends ISourceProvider, D extends IDesti
 ): TransferEngine<S, D> => {
   return new TransferEngine<S, D>(sourceProvider, destinationProvider, options);
 };
+
+export * as errors from './errors';

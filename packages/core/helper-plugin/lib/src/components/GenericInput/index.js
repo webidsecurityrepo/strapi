@@ -21,13 +21,14 @@ import {
   TextInput,
   TimePicker,
   ToggleInput,
+  JSONInput,
+  Option,
 } from '@strapi/design-system';
-import { Option } from '@strapi/design-system/Select';
-import EyeStriked from '@strapi/icons/EyeStriked';
-import Eye from '@strapi/icons/Eye';
+import { EyeStriked, Eye } from '@strapi/icons';
 
 import NotSupported from './NotSupported';
 import useFieldHint from '../../hooks/useFieldHint';
+import pxToRem from '../../utils/pxToRem';
 
 const GenericInput = ({
   autoComplete,
@@ -134,6 +135,26 @@ const GenericInput = ({
     : '';
 
   switch (type) {
+    case 'json': {
+      return (
+        <JSONInput
+          label={label}
+          labelAction={labelAction}
+          value={value}
+          error={errorMessage}
+          disabled={disabled}
+          hint={hint}
+          required={required}
+          onChange={(json) => {
+            // Default to null when the field is not required and there is no input value
+            const value = !attribute.required && !json.length ? null : json;
+            onChange({ target: { name, value } });
+          }}
+          minHeight={pxToRem(252)}
+          maxHeight={pxToRem(504)}
+        />
+      );
+    }
     case 'bool': {
       const clearProps = {
         clearLabel:
