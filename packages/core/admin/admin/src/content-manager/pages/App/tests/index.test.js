@@ -6,16 +6,16 @@ import { createMemoryHistory } from 'history';
 import { Provider } from 'react-redux';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { lightTheme, darkTheme } from '@strapi/design-system';
 import Theme from '../../../../components/Theme';
 import ThemeToggleProvider from '../../../../components/ThemeToggleProvider';
 import { App as ContentManagerApp } from '..';
 import cmReducers from '../../../../reducers';
-import useModels from '../useModels';
+import useContentManagerInitData from '../useContentManagerInitData';
 
-jest.mock('../useModels', () =>
+jest.mock('../useContentManagerInitData', () =>
   jest.fn(() => {
     return {};
   })
@@ -88,11 +88,11 @@ describe('Content manager | App | main', () => {
       components: [],
       status: 'resolved',
     };
-    useModels.mockImplementation(() => contentManagerState);
+    useContentManagerInitData.mockImplementation(() => contentManagerState);
     const rootReducer = combineReducers(cmReducers);
     const store = createStore(rootReducer, { 'content-manager_app': contentManagerState });
     const history = createMemoryHistory();
-    history.push('/content-manager');
+    act(() => history.push('/content-manager'));
 
     const { container } = render(
       <IntlProvider messages={{}} defaultLocale="en" locale="en">
@@ -161,10 +161,6 @@ describe('Content manager | App | main', () => {
 
       .c34 {
         overflow-x: hidden;
-      }
-
-      .c36 {
-        height: 100vh;
       }
 
       .c2 {
@@ -362,13 +358,13 @@ describe('Content manager | App | main', () => {
         outline: none;
       }
 
-      .c8 svg {
+      .c8 > svg {
         height: 12px;
         width: 12px;
       }
 
-      .c8 svg > g,
-      .c8 svg path {
+      .c8 > svg > g,
+      .c8 > svg path {
         fill: #ffffff;
       }
 
@@ -531,6 +527,10 @@ describe('Content manager | App | main', () => {
         fill: #8e8ea9;
       }
 
+      .c36 {
+        height: 100vh;
+      }
+
       <div
         class="c0"
       >
@@ -552,7 +552,7 @@ describe('Content manager | App | main', () => {
               <span>
                 <button
                   aria-disabled="false"
-                  aria-labelledby="0"
+                  aria-labelledby=":r1:"
                   class="c6 c7 c8 c9"
                   tabindex="0"
                   type="button"
@@ -631,7 +631,7 @@ describe('Content manager | App | main', () => {
                     </div>
                   </div>
                   <ol
-                    id="2"
+                    id=":r3:"
                   >
                     <li>
                       <a
@@ -708,7 +708,7 @@ describe('Content manager | App | main', () => {
                     </div>
                   </div>
                   <ol
-                    id="3"
+                    id=":r4:"
                   >
                     <li>
                       <a
@@ -815,11 +815,11 @@ describe('Content manager | App | main', () => {
       components: [],
       status: 'resolved',
     };
-    useModels.mockImplementation(() => contentManagerState);
+    useContentManagerInitData.mockImplementation(() => contentManagerState);
     const rootReducer = combineReducers(cmReducers);
     const store = createStore(rootReducer, { 'content-manager_app': contentManagerState });
     const history = createMemoryHistory();
-    history.push('/content-manager');
+    act(() => history.push('/content-manager'));
 
     render(
       <IntlProvider messages={{}} defaultLocale="en" locale="en">
@@ -857,15 +857,15 @@ describe('Content manager | App | main', () => {
       components: [],
       status: 'resolved',
     };
-    useModels.mockImplementation(() => contentManagerState);
-    jest.mock('../useModels', () =>
+    useContentManagerInitData.mockImplementation(() => contentManagerState);
+    jest.mock('../useContentManagerInitData', () =>
       jest.fn(() => {
         return contentManagerState;
       })
     );
     const rootReducer = combineReducers(cmReducers);
     const store = createStore(rootReducer, { 'content-manager_app': contentManagerState });
-    history.push('/content-manager/collectionType/category');
+    act(() => history.push('/content-manager/collectionType/category'));
 
     render(
       <IntlProvider messages={{}} defaultLocale="en" locale="en">
@@ -902,15 +902,15 @@ describe('Content manager | App | main', () => {
       components: [],
       status: 'resolved',
     };
-    useModels.mockImplementation(() => contentManagerState);
-    jest.mock('../useModels', () =>
+    useContentManagerInitData.mockImplementation(() => contentManagerState);
+    jest.mock('../useContentManagerInitData', () =>
       jest.fn(() => {
         return contentManagerState;
       })
     );
     const rootReducer = combineReducers(cmReducers);
     const store = createStore(rootReducer, { 'content-manager_app': contentManagerState });
-    history.push('/content-manager/collectionType/category');
+    act(() => history.push('/content-manager/collectionType/category'));
 
     render(
       <IntlProvider messages={{}} defaultLocale="en" locale="en">

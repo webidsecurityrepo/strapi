@@ -9,14 +9,12 @@ import { Switch, Route } from 'react-router-dom';
 import {
   LoadingIndicatorPage,
   auth,
-  request,
   useNotification,
   TrackingProvider,
   prefixFileUrlWithBackendUrl,
-  useAppInfos,
+  useAppInfo,
   useFetchClient,
 } from '@strapi/helper-plugin';
-import axios from 'axios';
 import { SkipToContent } from '@strapi/design-system';
 import { useIntl } from 'react-intl';
 import PrivateRoute from '../../components/PrivateRoute';
@@ -40,8 +38,8 @@ function App() {
     isLoading: true,
     hasAdmin: false,
   });
-  const appInfo = useAppInfos();
-  const { get } = useFetchClient();
+  const appInfo = useAppInfo();
+  const { get, post } = useFetchClient();
 
   const authRoutes = useMemo(() => {
     return makeUniqueRoutes(
@@ -57,11 +55,10 @@ function App() {
     const renewToken = async () => {
       try {
         const {
-          data: { token },
-        } = await request('/admin/renew-token', {
-          method: 'POST',
-          body: { token: currentToken },
-        });
+          data: {
+            data: { token },
+          },
+        } = await post('/admin/renew-token', { token: currentToken });
         auth.updateToken(token);
       } catch (err) {
         // Refresh app
@@ -73,7 +70,7 @@ function App() {
     if (currentToken) {
       renewToken();
     }
-  }, []);
+  }, [post]);
 
   useEffect(() => {
     const getData = async () => {
@@ -82,7 +79,7 @@ function App() {
           data: {
             data: { hasAdmin, uuid, menuLogo, authLogo },
           },
-        } = await axios.get(`${strapi.backendURL}/admin/init`);
+        } = await get(`/admin/init`);
 
         updateProjectSettings({
           menuLogo: prefixFileUrlWithBackendUrl(menuLogo),
@@ -102,20 +99,14 @@ function App() {
           setTelemetryProperties(properties);
 
           try {
-            await fetch('https://analytics.strapi.io/api/v2/track', {
-              method: 'POST',
-              body: JSON.stringify({
-                // This event is anonymous
-                event: 'didInitializeAdministration',
-                userId: '',
-                deviceId,
-                eventPropeties: {},
-                userProperties: { environment: appInfo.currentEnvironment },
-                groupProperties: { ...properties, projectId: uuid },
-              }),
-              headers: {
-                'Content-Type': 'application/json',
-              },
+            await post('https://analytics.strapi.io/api/v2/track', {
+              // This event is anonymous
+              event: 'didInitializeAdministration',
+              userId: '',
+              deviceId,
+              eventPropeties: {},
+              userProperties: { environment: appInfo.currentEnvironment },
+              groupProperties: { ...properties, projectId: uuid },
             });
           } catch (e) {
             // Silent.

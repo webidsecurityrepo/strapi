@@ -6,7 +6,7 @@ const {
 } = require('@strapi/utils');
 const _ = require('lodash');
 const registerUploadMiddleware = require('./middlewares/upload');
-const { getService } = require('./utils');
+const spec = require('../documentation/content-api.json');
 
 /**
  * Register upload plugin
@@ -17,10 +17,18 @@ module.exports = async ({ strapi }) => {
 
   await registerUploadMiddleware({ strapi });
 
-  getService('extensions').contentManager.entityManager.addSignedFileUrlsToAdmin();
-
   if (strapi.plugin('graphql')) {
     require('./graphql')({ strapi });
+  }
+
+  if (strapi.plugin('documentation')) {
+    strapi
+      .plugin('documentation')
+      .service('override')
+      .registerOverride(spec, {
+        pluginOrigin: 'upload',
+        excludeFromGeneration: ['upload'],
+      });
   }
 };
 

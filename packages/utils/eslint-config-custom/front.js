@@ -50,6 +50,12 @@ module.exports = {
               "'Stack' has been deprecated. Please import 'Flex' from '@strapi/design-system' instead.",
           },
           {
+            name: '@strapi/helper-plugin',
+            importNames: ['request'],
+            message:
+              "'request' has been deprecated. Please import 'useFetchClient' from '@strapi/helper-plugin' instead.",
+          },
+          {
             name: 'lodash',
             message: 'Please use import [method] from lodash/[method]',
           },
@@ -68,6 +74,13 @@ module.exports = {
             message: 'Please use the default import from "@strapi/icons" packages instead.',
           },
         ],
+      },
+    ],
+    'no-restricted-globals': [
+      'error',
+      {
+        name: 'strapi',
+        message: 'Use window.strapi instead.',
       },
     ],
   },

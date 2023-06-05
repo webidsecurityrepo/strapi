@@ -7,6 +7,7 @@
 const inquirer = require('inquirer');
 const { InvalidOptionArgumentError, Option } = require('commander');
 const { bold, green, cyan } = require('chalk');
+const { isNaN } = require('lodash/fp');
 const { exitWith } = require('./helpers');
 
 /**
@@ -38,6 +39,18 @@ const getParseListWithChoices = (choices, errorMessage = 'Invalid options:') => 
 
     return list;
   };
+};
+
+/**
+ * argParser: Parse a string as an integer
+ */
+const parseInteger = (value) => {
+  // parseInt takes a string and a radix
+  const parsedValue = parseInt(value, 10);
+  if (isNaN(parsedValue)) {
+    throw new InvalidOptionArgumentError(`Not an integer: ${value}`);
+  }
+  return parsedValue;
 };
 
 /**
@@ -98,28 +111,33 @@ const promptEncryptionKey = async (thisCommand) => {
  * @param {object} options Additional options
  * @param {string|undefined} options.failMessage The message to display when prompt is not confirmed
  */
-const confirmMessage = (message, { failMessage } = {}) => {
+const getCommanderConfirmMessage = (message, { failMessage } = {}) => {
   return async (command) => {
-    // if we have a force option, assume yes
-    const opts = command.opts();
-    if (opts?.force === true) {
-      // attempt to mimic the inquirer prompt exactly
-      console.log(`${green('?')} ${bold(message)} ${cyan('Yes')}`);
-      return;
-    }
-
-    const answers = await inquirer.prompt([
-      {
-        type: 'confirm',
-        message,
-        name: `confirm`,
-        default: false,
-      },
-    ]);
-    if (!answers.confirm) {
+    const confirmed = await confirmMessage(message, { force: command.opts().force });
+    if (!confirmed) {
       exitWith(1, failMessage);
     }
   };
+};
+
+const confirmMessage = async (message, { force } = {}) => {
+  // if we have a force option, respond yes
+  if (force === true) {
+    // attempt to mimic the inquirer prompt exactly
+    console.log(`${green('?')} ${bold(message)} ${cyan('Yes')}`);
+    return true;
+  }
+
+  const answers = await inquirer.prompt([
+    {
+      type: 'confirm',
+      message,
+      name: `confirm`,
+      default: false,
+    },
+  ]);
+
+  return answers.confirm;
 };
 
 const forceOption = new Option(
@@ -131,7 +149,9 @@ module.exports = {
   getParseListWithChoices,
   parseList,
   parseURL,
+  parseInteger,
   promptEncryptionKey,
+  getCommanderConfirmMessage,
   confirmMessage,
   forceOption,
 };

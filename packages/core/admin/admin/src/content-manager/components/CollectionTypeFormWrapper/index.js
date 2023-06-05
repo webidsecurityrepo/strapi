@@ -15,7 +15,7 @@ import {
 } from '@strapi/helper-plugin';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import isEqual from 'react-fast-compare';
+import isEqual from 'lodash/isEqual';
 import {
   createDefaultForm,
   getTrad,
@@ -149,7 +149,6 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
         if (axios.isCancel(err)) {
           return;
         }
-
         const resStatus = get(err, 'response.status', null);
 
         if (resStatus === 404) {
@@ -222,6 +221,8 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
 
         trackUsageRef.current('didDeleteEntry', trackerProperty);
 
+        replace(redirectionLink);
+
         return Promise.resolve(data);
       } catch (err) {
         trackUsageRef.current('didNotDeleteEntry', { error: err, ...trackerProperty });
@@ -229,12 +230,8 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
         return Promise.reject(err);
       }
     },
-    [id, slug, toggleNotification, del]
+    [id, slug, toggleNotification, del, redirectionLink, replace]
   );
-
-  const onDeleteSucceeded = useCallback(() => {
-    replace(redirectionLink);
-  }, [redirectionLink, replace]);
 
   const onPost = useCallback(
     async (body, trackerProperty) => {
@@ -409,7 +406,6 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
     isCreatingEntry,
     isLoadingForData: isLoading,
     onDelete,
-    onDeleteSucceeded,
     onPost,
     onPublish,
     onDraftRelationCheck,

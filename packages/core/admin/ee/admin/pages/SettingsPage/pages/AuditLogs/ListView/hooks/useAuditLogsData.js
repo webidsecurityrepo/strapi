@@ -2,26 +2,14 @@ import { useQuery } from 'react-query';
 import { useNotification, useFetchClient } from '@strapi/helper-plugin';
 import { useLocation } from 'react-router-dom';
 
-const useAuditLogsData = ({ canRead }) => {
+import { useAdminUsers } from '../../../../../../../../admin/src/hooks/useAdminUsers';
+
+const useAuditLogsData = ({ canReadAuditLogs, canReadUsers }) => {
   const { get } = useFetchClient();
   const { search } = useLocation();
   const toggleNotification = useNotification();
 
-  const fetchAuditLogsPage = async ({ queryKey }) => {
-    const search = queryKey[1];
-    const { data } = await get(`/admin/audit-logs${search}`);
-
-    return data;
-  };
-
-  const fetchAllUsers = async () => {
-    const { data } = await get(`/admin/users`);
-
-    return data;
-  };
-
   const queryOptions = {
-    enabled: canRead,
     keepPreviousData: true,
     retry: false,
     staleTime: 1000 * 20, // 20 seconds
@@ -29,19 +17,42 @@ const useAuditLogsData = ({ canRead }) => {
   };
 
   const {
+    users,
+    isError: isUsersError,
+    isLoading: isLoadingUsers,
+  } = useAdminUsers(
+    {},
+    {
+      ...queryOptions,
+      enabled: canReadUsers,
+      staleTime: 2 * (1000 * 60), // 2 minutes
+    }
+  );
+
+  const {
     data: auditLogs,
-    isLoading,
+    isLoading: isLoadingAuditLogs,
     isError: isAuditLogsError,
-  } = useQuery(['auditLogs', search], fetchAuditLogsPage, queryOptions);
+  } = useQuery(
+    ['auditLogs', search],
+    async ({ queryKey }) => {
+      const search = queryKey[1];
+      const { data } = await get(`/admin/audit-logs${search}`);
 
-  const { data: users, isError: isUsersError } = useQuery(['auditLogsUsers'], fetchAllUsers, {
-    ...queryOptions,
-    staleTime: 2 * (1000 * 60), // 2 minutes
-  });
+      return data;
+    },
+    {
+      ...queryOptions,
+      enabled: canReadAuditLogs,
+    }
+  );
 
-  const hasError = isAuditLogsError || isUsersError;
-
-  return { auditLogs, users: users?.data, isLoading, hasError };
+  return {
+    auditLogs,
+    users,
+    isLoading: isLoadingUsers || isLoadingAuditLogs,
+    hasError: isAuditLogsError || isUsersError,
+  };
 };
 
 export default useAuditLogsData;

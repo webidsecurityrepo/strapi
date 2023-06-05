@@ -851,6 +851,78 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
 
       expect(reducer(state, action)).toEqual(expected);
     });
+
+    it('should add a component at a specific position in the array', () => {
+      const components = {
+        'blog.simple': {
+          uid: 'blog.simple',
+          attributes: {
+            id: {
+              type: 'integer',
+            },
+            name: {
+              type: 'string',
+            },
+          },
+        },
+      };
+
+      const state = {
+        ...initialState,
+        componentsDataStructure: {
+          'blog.simple': { name: 'test' },
+        },
+        initialData: {
+          name: 'name',
+          dz: [{ name: 'test', __component: 'blog.simple', id: 0 }],
+        },
+        modifiedData: {
+          name: 'name',
+          dz: [{ name: 'test', __component: 'blog.simple', id: 0 }],
+        },
+      };
+
+      const expected = {
+        ...initialState,
+        componentsDataStructure: {
+          'blog.simple': { name: 'test' },
+        },
+        initialData: {
+          name: 'name',
+          dz: [{ name: 'test', __component: 'blog.simple', id: 0 }],
+        },
+        modifiedData: {
+          name: 'name',
+          dz: [
+            { name: 'test', __component: 'blog.simple', __temp_key__: 1 },
+            { name: 'test', __component: 'blog.simple', id: 0 },
+          ],
+        },
+        modifiedDZName: 'dz',
+        shouldCheckErrors: true,
+      };
+
+      const action = {
+        type: 'ADD_COMPONENT_TO_DYNAMIC_ZONE',
+        componentLayoutData: {
+          uid: 'blog.simple',
+          attributes: {
+            id: {
+              type: 'integer',
+            },
+            name: {
+              type: 'string',
+            },
+          },
+        },
+        allComponents: components,
+        keys: ['dz'],
+        shouldCheckErrors: true,
+        position: -1,
+      };
+
+      expect(reducer(state, action)).toEqual(expected);
+    });
   });
 
   describe('CONNECT_RELATION', () => {
@@ -3102,7 +3174,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
           { name: 'third', __temp_key__: 'Zz' },
           { name: 'second', __temp_key__: 'a0G' },
           { name: 'fourth', __temp_key__: 'a0V' },
-          { name: 'first', __temp_key__: 'a0O' },
+          { name: 'first', __temp_key__: 'a1' },
         ])
       );
 
@@ -3113,7 +3185,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
           { name: 'third', __temp_key__: 'Zz' },
           { name: 'fourth', __temp_key__: 'a0' },
           { name: 'second', __temp_key__: 'a0G' },
-          { name: 'first', __temp_key__: 'a0O' },
+          { name: 'first', __temp_key__: 'a1' },
         ])
       );
     });
