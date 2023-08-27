@@ -12473,14 +12473,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:8.3.0":
-  version: 8.3.0
-  resolution: "better-sqlite3@npm:8.3.0"
+"better-sqlite3@npm:8.5.2":
+  version: 8.5.2
+  resolution: "better-sqlite3@npm:8.5.2"
   dependencies:
     bindings: ^1.5.0
     node-gyp: latest
     prebuild-install: ^7.1.0
-  checksum: 00fc9f12058d2d157f56fe57b0f5c8ba705aee22a1dfe33ef8f60755531eda8f809cdb2377af314f6ed9396ad036094576e0596649bd6ca5bcaec172613e2dc9
+  checksum: c9b3bdc1e2b8458d42769aa370d602206696d3dd5486b17f773dc4c39070effedb6c4bc0a3d3540d07db33965ec5a5a97567054e31b80d54ed81e6b0f01e7c6d
   languageName: node
   linkType: hard
 
@@ -18507,7 +18507,7 @@ __metadata:
     "@strapi/provider-upload-aws-s3": 4.10.7
     "@strapi/provider-upload-cloudinary": 4.10.7
     "@strapi/strapi": 4.10.7
-    better-sqlite3: 8.3.0
+    better-sqlite3: 8.5.2
     lodash: 4.17.21
     mysql: 2.18.1
     mysql2: 3.3.0
@@ -22651,7 +22651,7 @@ __metadata:
     "@strapi/plugin-i18n": 4.10.7
     "@strapi/plugin-users-permissions": 4.10.7
     "@strapi/strapi": 4.10.7
-    better-sqlite3: 8.3.0
+    better-sqlite3: 8.5.2
     react: ^18.2.0
     react-dom: ^18.2.0
     react-router-dom: 5.3.4
